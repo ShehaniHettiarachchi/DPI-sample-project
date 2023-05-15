@@ -1,5 +1,4 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const bodyparser = require("body-parser");
 const cors = require("cors");
 const dotenv = require("dotenv");
@@ -17,3 +16,7 @@ app.use(bodyparser.urlencoded({ extended: true }));
 const PORT = process.env.PORT;
 
 app.listen(5000, console.log(`Server is running on port number : ${PORT}`));
+
+//Ticket Routes
+const ticketRoute = require("./routes/ticket.route");
+app.use("/ticket", ticketRoute);
