@@ -1,1 +1,1 @@
-# DPI--sample-project
+# DPI-sample-project
