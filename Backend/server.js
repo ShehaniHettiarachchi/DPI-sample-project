@@ -20,3 +20,7 @@ app.listen(5000, console.log(`Server is running on port number : ${PORT}`));
 //Ticket Routes
 const ticketRoute = require("./routes/ticket.route");
 app.use("/ticket", ticketRoute);
+
+//Product Routes
+const productRoute = require("./routes/product.route");
+app.use("/product", productRoute);

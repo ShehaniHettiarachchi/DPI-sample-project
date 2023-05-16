@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 
 const ticketSchema = new mongoose.Schema({
+
+
     ticketID: {
         type: String,
         required: true,
@@ -17,20 +19,6 @@ const ticketSchema = new mongoose.Schema({
         required: true,
     },
 
-    productDetails: [{
-        productCode: {
-            type: String,
-            required: true,
-        },
-        productDesc: {
-            type: String,
-            required: true,
-        },
-        productPrice: {
-            type: Number,
-            required: true,
-        },
-    }],
     status: {
         type: String,
         enum: ["Active", "Inactive"],
