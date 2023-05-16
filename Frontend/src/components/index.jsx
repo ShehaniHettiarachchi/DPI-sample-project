@@ -27,4 +27,4 @@ const makeToast = (props) => {
   }
 };
 
-export { makeToast };
+export default { makeToast };

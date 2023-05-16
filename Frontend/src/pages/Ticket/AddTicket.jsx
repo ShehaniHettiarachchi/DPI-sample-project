@@ -1,8 +1,46 @@
 import React from "react";
+import axios from "axios";
+import { makeToast } from "../../components/toast/index";
 import { FaEdit } from "react-icons/fa";
 import { AiFillDelete } from "react-icons/ai";
 
 export default function AddTicket() {
+
+  const options = ["Active", "Inactive"];
+
+  const [ticketID, setTicketID] = useState("");
+  const [ticketName, setTicketName] = useState("");
+  const [ticketPrice, setTicketPrice] = useState("");
+  const [ticketStatus, setTicketStatus] = useState("");
+  const [remark, setRemark] = useState("");
+
+
+  function sendData(e) {
+    e.preventDefauld();
+
+    const newTicket = {
+      ticketID,
+      ticketName,
+      ticketPrice,
+      ticketStatus,
+      remark,
+    };
+
+    axios
+      .post("http://localhost:5000/ticket/", newTicket)
+      .then(() => {
+        makeToast("success", "Ticket Added Successfully");
+
+        setTicketID("");
+        setTicketName("");
+        setTicketPrice("");
+        setRemark("");
+      })
+      .catch((error) => {
+        alert(error);
+      });
+  }
+
   return (
     <div>
       <div
@@ -28,7 +66,7 @@ export default function AddTicket() {
             </h3>
           </div>
           <div class="card-body">
-            <form className="row g-3 p-6 was-validated">
+            <form onSubmit={sendData} className="row g-3 p-6 was-validated">
               <div class="col-md-6">
                 <label for="inputID" class="form-label">
                   Ticket ID
@@ -41,7 +79,7 @@ export default function AddTicket() {
                   placeholder="ex : 000"
                   pattern="^[0-9]{1,3}$"
                   maxLength="3"
-                  // onChange={(e) => setTicketID(e.target.value)}
+                  onChange={(e) => setTicketID(e.target.value)}
                   required
                 ></input>
                 <div className="valid-feedback">Valid Ticket ID</div>
@@ -58,7 +96,7 @@ export default function AddTicket() {
                   type="text"
                   className="form-control"
                   name="ticketName"
-                  //onChange={(e) => setTicketName(e.target.value)}
+                  onChange={(e) => setTicketName(e.target.value)}
                   required
                 ></input>
                 <div className="valid-feedback">Valid Ticket Name</div>
@@ -75,7 +113,7 @@ export default function AddTicket() {
                   name="ticketPrice"
                   maxLength="5"
                   pattern="[0-9]"
-                  // onChange={(e) => setTicketPrice(e.target.value)}
+                  onChange={(e) => setTicketPrice(e.target.value)}
                   required
                 ></input>
                 <div className="valid-feedback">Valid ticket price</div>
@@ -204,31 +242,36 @@ export default function AddTicket() {
                 <label for="inputStatus" class="form-label">
                   Status
                 </label>
-                <select
-                  className="form-control"
-                  type="text"
-                  name="status"
-                  // onChange={(e) => setTicketStatus(e.target.value)}
-                  required
-                >
-                  {/* {options.map((value) => (
-                    <option value={value} key={value}>
-                      {value}
-                    </option>
-                  ))} */}
-                </select>
+                <div class="btn-group col-md-6 mt-5 me-5 pt-5" role="group" aria-label="Basic radio toggle button group">
+
+                  {options.map((value) => (
+                   <label class="btn btn-outline-info" type="radio"
+                      value={value}
+                      checked={ticketStatus === value}
+                      onChange={(e) => setTicketStatus(e.target.value)}
+                    >{value}
+                  </label>
+                  ))}
+                  {/* <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked/>
+                  <label class="btn btn-outline-info" for="btnradio1">Active</label>
+
+                  <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off"/>
+                  <label class="btn btn-outline-info" for="btnradio2">Inactive</label> */}
+                </div>
                 <div className="valid-feedback">Valid Status</div>
                 <div className="invalid-feedback">Status is required.</div>
               </div>
 
               <div class="">
-                <label for="inputDescription" class="form-label">
+                <label for="inputRemark" class="form-label">
                   Remark
                 </label>
                 <textarea
+                  type= "text"	
                   class="form-control"
                   rows="3"
                   name="remark"
+                  onChange={(e) => setRemark(e.target.value)}
                 ></textarea>
               </div>
               <div class="col-12 ">
