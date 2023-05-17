@@ -1,22 +1,22 @@
 import React from "react";
 import axios from "axios";
-import { makeToast } from "../../components/toast/index";
-import { FaEdit } from "react-icons/fa";
-import { AiFillDelete } from "react-icons/ai";
+import { useState } from "react";
+import { makeToast } from "../../components";
+import AddProduct from "../Product/AddProduct";
 
 export default function AddTicket() {
-
   const options = ["Active", "Inactive"];
 
+  //Ticket Details
   const [ticketID, setTicketID] = useState("");
   const [ticketName, setTicketName] = useState("");
   const [ticketPrice, setTicketPrice] = useState("");
   const [ticketStatus, setTicketStatus] = useState("");
   const [remark, setRemark] = useState("");
 
-
-  function sendData(e) {
-    e.preventDefauld();
+  //Ticket Details
+  function sendTicketData(e) {
+    e.preventDefault();
 
     const newTicket = {
       ticketID,
@@ -29,7 +29,7 @@ export default function AddTicket() {
     axios
       .post("http://localhost:5000/ticket/", newTicket)
       .then(() => {
-        makeToast("success", "Ticket Added Successfully");
+        makeToast({ type: "success", message: "Ticket added Successfully" });
 
         setTicketID("");
         setTicketName("");
@@ -48,13 +48,13 @@ export default function AddTicket() {
         style={{ paddingBottom: "150px", paddingTop: "30px" }}
       >
         <div
-          class="card"
+          className="card"
           style={{
             borderBlockStartColor: "#205E61",
             borderBlockStartWidth: "10px",
           }}
         >
-          <div class="card-header">
+          <div className="card-header">
             <h3
               style={{
                 color: "#205E61",
@@ -65,10 +65,13 @@ export default function AddTicket() {
               Add Ticket Details
             </h3>
           </div>
-          <div class="card-body">
-            <form onSubmit={sendData} className="row g-3 p-6 was-validated">
-              <div class="col-md-6">
-                <label for="inputID" class="form-label">
+          <div className="card-body">
+            <form
+              onSubmit={sendTicketData}
+              className="row g-3 p-6 was-validated"
+            >
+              <div className="col-md-6">
+                <label for="inputID" className="form-label">
                   Ticket ID
                 </label>
                 <input
@@ -88,8 +91,8 @@ export default function AddTicket() {
                   000).
                 </div>
               </div>
-              <div class="col-md-6">
-                <label for="inputName" class="form-label">
+              <div className="col-md-6">
+                <label for="inputName" className="form-label">
                   Ticket Name
                 </label>
                 <input
@@ -103,8 +106,8 @@ export default function AddTicket() {
                 <div className="invalid-feedback">Ticket Name is required</div>
               </div>
 
-              <div class="col-md-6">
-                <label for="inputPrice" class="form-label">
+              <div className="col-md-6">
+                <label for="inputPrice" className="form-label">
                   Ticket Price
                 </label>
                 <input
@@ -112,7 +115,7 @@ export default function AddTicket() {
                   className="form-control"
                   name="ticketPrice"
                   maxLength="5"
-                  pattern="[0-9]"
+                  pattern="^[0-9]{1,5}$"
                   onChange={(e) => setTicketPrice(e.target.value)}
                   required
                 ></input>
@@ -123,161 +126,46 @@ export default function AddTicket() {
               </div>
 
               {/* product Details Form */}
-              <div
-                className="container"
-                style={{ paddingBottom: "30px", paddingTop: "30px" }}
-              >
-                <div
-                  class="card"
-                  style={{
-                    backgroundColor: "#E3F4F4",
-                  }}
-                >
-                  <form className="row g-3 p-6 was-validated">
-                    <div class="col-md-6">
-                      <label for="inputName" class="form-label">
-                        Product Name
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        name="productName"
-                        // onChange={(e) => setTicketPrice(e.target.value)}
-                        required
-                      ></input>
-                      <div className="valid-feedback">Valid product name</div>
-                      <div className="invalid-feedback">
-                        Product name is required.
-                      </div>
-                    </div>
-
-                    <div class="col-md-6">
-                      <label for="inputPrice" class="form-label">
-                        Product Price
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        name="productPrice"
-                        maxLength="5"
-                        pattern="^[0-9]{1,5}$"
-                        // onChange={(e) => setTicketPrice(e.target.value)}
-                        required
-                      ></input>
-                      <div className="valid-feedback">Valid product price</div>
-                      <div className="invalid-feedback">
-                        Product Price is required.
-                      </div>
-                    </div>
-
-                    <div class="col-md-6">
-                      <button
-                        type="submit"
-                        class="btn ps-5 pe-5"
-                        style={{ backgroundColor: "#576CBC", color: "white" }}
-                      >
-                        ADD
-                      </button>
-                    </div>
-                    <div class="col-md-6">
-                      <button
-                        type="submit"
-                        class="btn ps-5 pe-5"
-                        style={{ backgroundColor: "#E21818", color: "white" }}
-                      >
-                        CLEAR
-                      </button>
-                    </div>
-                  </form>
-                  <div class="pt-5">
-                    <table className="table table-striped">
-                      <thead>
-                        <tr>
-                          <th>ACTION</th>
-                          <th>PRODUCT NAME</th>
-                          <th>PRICE</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td>
-                            <button
-                              type="button"
-                              class="btn btn-danger me-3"
-                              style={{
-                                color: "#9C254D",
-                                backgroundColor: "#FFFFFF",
-                                padding: "2%",
-                                marginRight: "3%",
-                              }}
-                            >
-                              {" "}
-                              <AiFillDelete />
-                            </button>
-                            <button
-                              type="button"
-                              class="btn btn-warning ms-2"
-                              style={{
-                                color: "#03C988",
-                                backgroundColor: "#FFFFFF",
-                                padding: "2%",
-                                marginRight: "3%",
-                              }}
-                            >
-                              {" "}
-                              <FaEdit />
-                            </button>
-                          </td>
-                          <td></td>
-                          <td></td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
+              <AddProduct />
               {/* product Details Form */}
 
-              <div class="col-md-6">
-                <label for="inputStatus" class="form-label">
+              <div className="col-md-6">
+                <label for="inputStatus" className="form-label">
                   Status
                 </label>
-                <div class="btn-group col-md-6 mt-5 me-5 pt-5" role="group" aria-label="Basic radio toggle button group">
-
+                <select
+                  className="form-select"
+                  name="remark"
+                  onChange={(e) => setTicketStatus(e.target.value)}
+                  required
+                >
                   {options.map((value) => (
-                   <label class="btn btn-outline-info" type="radio"
-                      value={value}
-                      checked={ticketStatus === value}
-                      onChange={(e) => setTicketStatus(e.target.value)}
-                    >{value}
-                  </label>
+                    <option value={value} key={value}>
+                      {value}
+                    </option>
                   ))}
-                  {/* <input type="radio" class="btn-check" name="btnradio" id="btnradio1" autocomplete="off" checked/>
-                  <label class="btn btn-outline-info" for="btnradio1">Active</label>
-
-                  <input type="radio" class="btn-check" name="btnradio" id="btnradio2" autocomplete="off"/>
-                  <label class="btn btn-outline-info" for="btnradio2">Inactive</label> */}
-                </div>
+                </select>
                 <div className="valid-feedback">Valid Status</div>
                 <div className="invalid-feedback">Status is required.</div>
               </div>
 
-              <div class="">
-                <label for="inputRemark" class="form-label">
+              <div className="">
+                <label for="inputRemark" className="form-label">
                   Remark
                 </label>
                 <textarea
-                  type= "text"	
-                  class="form-control"
+                  type="text"
+                  className="form-control"
                   rows="3"
                   name="remark"
+                  checked={remark}
                   onChange={(e) => setRemark(e.target.value)}
                 ></textarea>
               </div>
-              <div class="col-12 ">
+              <div className="col-12 ">
                 <button
                   type="submit"
-                  class="btn btn-primary ps-5 pe-5"
+                  className="btn btn-primary ps-5 pe-5"
                   style={{ backgroundColor: "#205E61" }}
                 >
                   SAVE
