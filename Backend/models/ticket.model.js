@@ -28,6 +28,10 @@ const ticketSchema = new mongoose.Schema({
     remark: {
         type: String,
     },
+    productDetails: [{
+        productName: { type: String, required: true },
+        productPrice: { type: Number, required: true },
+    }],
 
 });
 
