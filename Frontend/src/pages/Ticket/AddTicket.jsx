@@ -1,45 +1,111 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useState } from "react";
-import { makeToast } from "../../components";
-import AddProduct from "../Product/AddProduct";
+import { AiFillDelete } from "react-icons/ai";
+import { makeToast } from "../../components/index";
 
-export default function AddTicket() {
+const TicketForm = () => {
   const options = ["Active", "Inactive"];
 
-  //Ticket Details
   const [ticketID, setTicketID] = useState("");
   const [ticketName, setTicketName] = useState("");
-  const [ticketPrice, setTicketPrice] = useState("");
-  const [ticketStatus, setTicketStatus] = useState("");
+  const [ticketPrice, setTicketPrice] = useState(0); // Initialize ticket price as 0
+  const [productDetails, setProductDetails] = useState([]);
+  const [status, setStatus] = useState("");
   const [remark, setRemark] = useState("");
 
-  //Ticket Details
-  function sendTicketData(e) {
+  // Calculate ticket price based on product prices
+  useEffect(() => {
+    const calculateTicketPrice = () => {
+      let total = 0;
+      productDetails.forEach((product) => {
+        total += product.productPrice;
+      });
+      setTicketPrice(total);
+    };
+
+    calculateTicketPrice();
+  }, [productDetails]);
+
+  // Load product details for a ticket
+  const loadProductDetails = async (ticketId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/ticket/${ticketId}/products`
+      );
+      setProductDetails(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // Add a product
+  const addProduct = () => {
+    const newProduct = {
+      productName: "",
+      productPrice: "",
+    };
+    setProductDetails([...productDetails, newProduct]);
+  };
+
+  // Update product details
+  const updateProduct = (index, field, value) => {
+    const updatedProductDetails = [...productDetails];
+    updatedProductDetails[index][field] = value;
+    setProductDetails(updatedProductDetails);
+  };
+
+  // Delete product
+  const deleteProduct = (index) => {
+    const updatedProductDetails = [...productDetails];
+    updatedProductDetails.splice(index, 1);
+    setProductDetails(updatedProductDetails);
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Save product details to local storage
 
     const newTicket = {
       ticketID,
       ticketName,
       ticketPrice,
-      ticketStatus,
+      productDetails,
+      status,
       remark,
     };
 
-    axios
-      .post("http://localhost:5000/ticket/", newTicket)
-      .then(() => {
-        makeToast({ type: "success", message: "Ticket added Successfully" });
-
-        setTicketID("");
-        setTicketName("");
-        setTicketPrice("");
-        setRemark("");
-      })
-      .catch((error) => {
-        alert(error);
+    try {
+      const response = await axios.post("http://localhost:5000/ticket/", {
+        ticketID,
+        ticketName,
+        ticketPrice,
+        productDetails,
+        status,
+        remark,
       });
-  }
+      console.log(response.data);
+      // Clear form fields and product details
+      setTicketID("");
+      setTicketName("");
+      setTicketPrice("");
+      setProductDetails([]);
+      setStatus("");
+      setRemark("");
+
+      makeToast({ type: "success", message: "Ticket Added Successfully" });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    // Load product details when ticketID changes
+    if (ticketID) {
+      loadProductDetails(ticketID);
+    }
+  }, [ticketID]);
 
   return (
     <div>
@@ -66,14 +132,9 @@ export default function AddTicket() {
             </h3>
           </div>
           <div className="card-body">
-            <form
-              onSubmit={sendTicketData}
-              className="row g-3 p-6 was-validated"
-            >
+            <form onSubmit={handleSubmit} className="row g-3 p-6 was-validated">
               <div className="col-md-6">
-                <label for="inputID" className="form-label">
-                  Ticket ID
-                </label>
+                <label>Ticket ID:</label>
                 <input
                   type="text"
                   id="ticketID"
@@ -82,9 +143,10 @@ export default function AddTicket() {
                   placeholder="ex : 000"
                   pattern="^[0-9]{1,3}$"
                   maxLength="3"
+                  value={ticketID}
                   onChange={(e) => setTicketID(e.target.value)}
                   required
-                ></input>
+                />
                 <div className="valid-feedback">Valid Ticket ID</div>
                 <div className="invalid-feedback">
                   Ticket ID is required & All characters should be numbers (ex:
@@ -92,51 +154,39 @@ export default function AddTicket() {
                 </div>
               </div>
               <div className="col-md-6">
-                <label for="inputName" className="form-label">
-                  Ticket Name
-                </label>
+                <label>Ticket Name:</label>
                 <input
                   type="text"
                   className="form-control"
                   name="ticketName"
+                  value={ticketName}
                   onChange={(e) => setTicketName(e.target.value)}
                   required
-                ></input>
+                />
                 <div className="valid-feedback">Valid Ticket Name</div>
                 <div className="invalid-feedback">Ticket Name is required</div>
               </div>
-
               <div className="col-md-6">
-                <label for="inputPrice" className="form-label">
-                  Ticket Price
-                </label>
+                <label>Ticket Price:</label>
                 <input
-                  type="text"
+                  type="number"
                   className="form-control"
                   name="ticketPrice"
                   maxLength="5"
-                  pattern="^[0-9]{1,5}$"
-                  onChange={(e) => setTicketPrice(e.target.value)}
-                  required
-                ></input>
+                  value={ticketPrice}
+                />
                 <div className="valid-feedback">Valid ticket price</div>
                 <div className="invalid-feedback">
                   Ticket Price is required.
                 </div>
               </div>
-
-              {/* product Details Form */}
-              <AddProduct />
-              {/* product Details Form */}
-
               <div className="col-md-6">
-                <label for="inputStatus" className="form-label">
-                  Status
-                </label>
+                <label>Status:</label>
                 <select
                   className="form-select"
-                  name="remark"
-                  onChange={(e) => setTicketStatus(e.target.value)}
+                  name="status"
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
                   required
                 >
                   {options.map((value) => (
@@ -145,36 +195,126 @@ export default function AddTicket() {
                     </option>
                   ))}
                 </select>
-                <div className="valid-feedback">Valid Status</div>
-                <div className="invalid-feedback">Status is required.</div>
               </div>
 
-              <div className="">
-                <label for="inputRemark" className="form-label">
-                  Remark
-                </label>
-                <textarea
-                  type="text"
-                  className="form-control"
-                  rows="3"
-                  name="remark"
-                  checked={remark}
-                  onChange={(e) => setRemark(e.target.value)}
-                ></textarea>
-              </div>
-              <div className="col-12 ">
-                <button
-                  type="submit"
-                  className="btn btn-primary ps-5 pe-5"
-                  style={{ backgroundColor: "#205E61" }}
+              {/* Product details */}
+              <div
+                className="container"
+                style={{ paddingBottom: "30px", paddingTop: "30px" }}
+              >
+                <div
+                  className="card"
+                  style={{
+                    backgroundColor: "#E3F4F4",
+                  }}
                 >
-                  SAVE
-                </button>
+                  <div className="row g-3 p-6 was-validated">
+                    <h4
+                      style={{
+                        color: "#205E61",
+                        fontFamily: "Abril Fatface",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Product Details
+                    </h4>
+                    <div className="md-6">
+                      <button
+                        type="button"
+                        className="btn ps-3 pe-3"
+                        style={{ backgroundColor: "#146C94", color: "white" }}
+                        onClick={addProduct}
+                      >
+                        Add Product
+                      </button>
+                    </div>
+                    <div className="pt-5">
+                      <table className="table table-striped">
+                        <thead>
+                          <tr>
+                            <th>PRODUCT NAME</th>
+                            <th>PRODUCT PRICE</th>
+                            <th>ACTION</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {productDetails.map((product, index) => (
+                            <tr key={index}>
+                              <td>
+                                <input
+                                  type="text"
+                                  className="form-control"
+                                  value={product.productName}
+                                  onChange={(e) =>
+                                    updateProduct(
+                                      index,
+                                      "productName",
+                                      e.target.value
+                                    )
+                                  }
+                                />
+                              </td>
+                              <td>
+                                <input
+                                  type="number"
+                                  className="form-control"
+                                  value={product.productPrice}
+                                  onChange={(e) =>
+                                    updateProduct(
+                                      index,
+                                      "productPrice",
+                                      e.target.value
+                                    )
+                                  }
+                                />
+                              </td>
+                              <td>
+                                <button
+                                  type="button"
+                                  className="btn btn-danger me-3"
+                                  style={{
+                                    color: "#9C254D",
+                                    backgroundColor: "#FFFFFF",
+                                    padding: "2%",
+                                    marginRight: "3%",
+                                  }}
+                                  onClick={() => deleteProduct(index)}
+                                >
+                                  <AiFillDelete />
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <div className="pt-5">
+                  <label>Remark:</label>
+                  <textarea
+                    type="text"
+                    rows="3"
+                    className="form-control"
+                    name="remark"
+                    value={remark}
+                    onChange={(e) => setRemark(e.target.value)}
+                  ></textarea>
+                </div>
               </div>
+              <button
+                type="submit"
+                className="btn"
+                style={{ backgroundColor: "#00235B", color: "white" }}
+              >
+                Submit
+              </button>
             </form>
           </div>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default TicketForm;
