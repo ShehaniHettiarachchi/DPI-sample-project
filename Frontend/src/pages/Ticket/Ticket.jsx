@@ -5,6 +5,10 @@ import { v4 as uuidv4 } from 'uuid';
 
 export default function Ticket() {
   const uniqueId = uuidv4();
+
+  localStorage.setItem('uniqueId', uniqueId);
+
+  
   return (
     <div>
         <Link to={`/ticket/${uniqueId}`}>

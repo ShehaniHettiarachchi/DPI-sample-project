@@ -102,8 +102,13 @@ const TicketForm = () => {
     // Load product details when ticketID changes
     if (ticketID) {
       loadProductDetails(ticketID);
+      localStorage.setItem("ticketID", ticketID);
     }
   }, [ticketID]);
+
+  const  {id} = useParams();
+
+  console.log(id);
 
   return (
     <div>
@@ -137,12 +142,14 @@ const TicketForm = () => {
                   type="text"
                   id="ticketID"
                   className="form-control"
-                  name={ticketID}
+                  name="ticketId"
                   placeholder="ex : 000"
                   pattern="^[0-9]{1,3}$"
                   maxLength="3"
-                  value={ticketID}
-                  required
+                  value={`${id}`}
+                  readOnly
+                  
+
                 />
                 <div className="valid-feedback">Valid Ticket ID</div>
                 <div className="invalid-feedback">
@@ -303,6 +310,7 @@ const TicketForm = () => {
                 type="submit"
                 className="btn"
                 style={{ backgroundColor: "#00235B", color: "white" }}
+              
               >
                 Submit
               </button>
