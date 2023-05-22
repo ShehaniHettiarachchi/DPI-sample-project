@@ -5,6 +5,8 @@ const { Ticket } = require("../models/ticket.model");
 // create a new ticket
 //http://localhost:5000/ticket/
 router.route("/").post((req, res) => {
+  try{
+    console.log(req.body);
     const ticketID = req.body.ticketID;
     const ticketName = req.body.ticketName;
     const ticketPrice = req.body.ticketPrice;
@@ -29,6 +31,13 @@ router.route("/").post((req, res) => {
         .catch((err) => {
         console.log(err);
         });
+  }
+
+  //****** **/ Error handling ******
+  catch(ex) {
+    console.log(ex);
+  }
+    
 });
 
 // Get all tickets

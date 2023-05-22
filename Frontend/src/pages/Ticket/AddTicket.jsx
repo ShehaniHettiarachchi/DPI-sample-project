@@ -15,7 +15,7 @@ const TicketForm = () => {
   const [ticketName, setTicketName] = useState("");
   const [ticketPrice, setTicketPrice] = useState(0); // Initialize ticket price as 0
   const [productDetails, setProductDetails] = useState([]);
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState("Active");
   const [remark, setRemark] = useState("");
 
   // Calculate ticket price based on product prices
