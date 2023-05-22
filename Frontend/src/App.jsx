@@ -3,7 +3,8 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 //Ticket
-import Ticket from "./pages/Ticket/AddTicket";
+import AddTicket from "./pages/Ticket/AddTicket";
+import Ticket from "./pages/Ticket/Ticket";
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <Routes>
         {/* Ticket Routes */}
         <Route path="/" element={<Ticket />} />
+        <Route path="/ticket/:id" element={<AddTicket />} />
       </Routes>
     </Router>
   );

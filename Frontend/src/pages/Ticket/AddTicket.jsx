@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { AiFillDelete } from "react-icons/ai";
 import { makeToast } from "../../components/index";
 
 const TicketForm = () => {
   const options = ["Active", "Inactive"];
+
+  const params = useParams();
+  const tID = params.id;
+  const navigate = useNavigate();
 
   const [ticketID, setTicketID] = useState("");
   const [ticketName, setTicketName] = useState("");
@@ -18,7 +23,7 @@ const TicketForm = () => {
     const calculateTicketPrice = () => {
       let total = 0;
       productDetails.forEach((product) => {
-        total += product.productPrice;
+        total += parseFloat(product.productPrice);
       });
       setTicketPrice(total);
     };
@@ -68,23 +73,16 @@ const TicketForm = () => {
     // Save product details to local storage
 
     const newTicket = {
-      ticketID,
-      ticketName,
-      ticketPrice,
-      productDetails,
-      status,
-      remark,
+      ticketID: tID,
+      ticketName: ticketName,
+      ticketPrice: ticketPrice,
+      productDetails: productDetails,
+      status: status,
+      remark: remark,
     };
 
     try {
-      const response = await axios.post("http://localhost:5000/ticket/", {
-        ticketID,
-        ticketName,
-        ticketPrice,
-        productDetails,
-        status,
-        remark,
-      });
+      const response = await axios.post("http://localhost:5000/ticket/", newTicket); // Save ticket details to database
       console.log(response.data);
       // Clear form fields and product details
       setTicketID("");
@@ -139,12 +137,11 @@ const TicketForm = () => {
                   type="text"
                   id="ticketID"
                   className="form-control"
-                  name="ID"
+                  name={ticketID}
                   placeholder="ex : 000"
                   pattern="^[0-9]{1,3}$"
                   maxLength="3"
                   value={ticketID}
-                  onChange={(e) => setTicketID(e.target.value)}
                   required
                 />
                 <div className="valid-feedback">Valid Ticket ID</div>
