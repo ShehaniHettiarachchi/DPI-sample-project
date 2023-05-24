@@ -1,8 +1,8 @@
 # Use a Node.js base image
-FROM node:17-alpine
+FROM node:latest
 
 # Set the working directory inside the container
-WORKDIR /app
+WORKDIR /server
 
 # Copy package.json and yarn.lock to the working directory
 COPY package.json yarn.lock ./
@@ -17,7 +17,7 @@ COPY . .
 EXPOSE 5000
 
 # Start the Node.js application
-CMD ["node", "server.js"]
+CMD ["yarn", "start"]
 
 
 
